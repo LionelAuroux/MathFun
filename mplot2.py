@@ -150,7 +150,18 @@ life_exp = [
 
 
 # Make a line plot: year on the x-axis, pop on the y-axis
-plt.hist(life_exp)
+plt.hist(life_exp, bins=5)
 
 # Display the plot with plt.show()
 plt.show()
+plt.clf()
+
+# bins=10 by default
+plt.hist(life_exp)
+plt.show()
+plt.clf()
+
+#more bins
+plt.hist(life_exp, bins=20)
+plt.show()
+plt.clf()
