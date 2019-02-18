@@ -34,11 +34,13 @@ from requests_html import HTMLSession
 class Test(unittest.TestCase):
     def test_00(self):
         s = HTMLSession()
-        r = s.get('https://primes.utm.edu/lists/small/1000.txt', verify=False)
+        r = s.get('https://primes.utm.edu/lists/small/10000.txt', verify=False)
         lines = list(map(lambda _: int(_), r.text.split()[15:-1]))
+        print("%d is the last of %d first primes" % (lines[-1], len(lines)))
         p2 = get_primes_list(lines[-1])
         self.assertEqual(len(lines), len(p2))
         self.assertEqual(lines, p2)
+        print("Algo OK")
 ###
 
 if __name__ == "__main__":
