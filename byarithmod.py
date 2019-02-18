@@ -19,11 +19,11 @@ def get_primes_list(maxval):
     cnt = 5
     while True:
         # si on est de proche en proche (sans trou) relativement prime on est prime
+        if cnt > maxval:
+            break
         if isrelatprime(prod, cnt):
             plist.append(cnt)
             prod *= cnt
-        if cnt >= maxval:
-            break
         cnt += 2
     return plist
 
