@@ -13,10 +13,10 @@ def isrelatprime(prod, cnt):
 
 def get_primes_list(maxval):
     # pour l'affichage
-    plist = [2]
+    plist = [2, 3]
     # un seul produit sert comme aggrégat de tous les primes
-    prod = 2
-    cnt = 3
+    prod = 2 * 3
+    cnt = 5
     while True:
         # si on est de proche en proche (sans trou) relativement prime on est prime
         if isrelatprime(prod, cnt):
@@ -24,8 +24,22 @@ def get_primes_list(maxval):
             prod *= cnt
         if cnt >= maxval:
             break
-        cnt += 1
+        cnt += 2
     return plist
+
+### unit test
+import unittest
+from requests_html import HTMLSession
+
+class Test(unittest.TestCase):
+    def test_00(self):
+        s = HTMLSession()
+        r = s.get('https://primes.utm.edu/lists/small/1000.txt', verify=False)
+        lines = list(map(lambda _: int(_), r.text.split()[15:-1]))
+        p2 = get_primes_list(lines[-1])
+        self.assertEqual(len(lines), len(p2))
+        self.assertEqual(lines, p2)
+###
 
 if __name__ == "__main__":
     import argparse
