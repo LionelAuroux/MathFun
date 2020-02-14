@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -39,11 +40,14 @@ vector<int64_t> get_prime_list(int64_t maxval)
 vector<int64_t> get_prime_list0(int64_t maxval)
 {
     int64_t sqrt_max = (int64_t) sqrt((double)maxval) + 1;
-    int64_t msize = maxval;
-    char *ary = new char[msize];
+    char *ary = new char[maxval];
     vector<int64_t> prime_list;
 
     cout << "SQRT MAX:" << sqrt_max << endl;
+    struct timeval  tv;
+    suseconds_t usec;
+    gettimeofday(&tv, NULL);
+    usec = tv.tv_usec;
     for (int64_t i = 3; i < sqrt_max; i += 2)
     {
         if (!ary[i])
@@ -56,6 +60,9 @@ vector<int64_t> get_prime_list0(int64_t maxval)
             }
         }
     }
+    gettimeofday(&tv, NULL);
+    usec = tv.tv_usec - usec;
+    cout << "list0 " << usec << endl;
     prime_list.push_back(2);
     for (int64_t i = 3; i < maxval; i += 2)
     {
@@ -68,33 +75,54 @@ vector<int64_t> get_prime_list0(int64_t maxval)
 vector<int64_t> get_prime_list2(int64_t maxval)
 {
     vector<int64_t> prime_list;
-    vector<int64_t> prime_rest;
+    auto ary = new int64_t[maxval];
+    auto prime_rest = new int64_t[maxval];
 
-    prime_list.push_back(2);
-    prime_rest.push_back(1);
+    ary[0] = 2;
+    int64_t len = 1;
+    prime_rest[0] = 1;
     int64_t cnt = 3;
+    struct timeval  tv;
+    suseconds_t usec;
+    gettimeofday(&tv, NULL);
+    usec = tv.tv_usec;
     while (true)
     {
         bool is_prime = true;
         int64_t idx = 0;
-        for (auto it: prime_list)
+        cout << "compo:" << cnt << endl;
+        uint64_t next = ~0;
+        for (int64_t it = 0; it < len; it += 1)
         {
             prime_rest[idx] += 2; 
-            if (prime_rest[idx] >= it)
-                prime_rest[idx] -= it;
+            if (prime_rest[idx] != 1 && prime_rest[idx] < next)
+                next = prime_rest[idx];
+            if (prime_rest[idx] >= ary[it])
+                prime_rest[idx] -= ary[it];
+            cout << ary[it] << ": " << prime_rest[idx];
+            if (it + 1 < len)
+                cout << ", ";
             if (!prime_rest[idx])
                 is_prime = false;
             idx += 1;
         }
+        cout << endl;
         if (is_prime)
         {
-            prime_list.push_back(cnt);
-            prime_rest.push_back(0);
+            cout << "next: " << (cnt + next) << endl;
+            ary[len] = cnt;
+            prime_rest[idx] = 0;
+            len += 1;
         }
         if (cnt >= maxval)
             break;
         cnt += 2;
     }
+    gettimeofday(&tv, NULL);
+    usec = tv.tv_usec - usec;
+    cout << "list1 " << usec << endl;
+    for (int64_t i = 0; i < len; i += 1)
+        prime_list.push_back(ary[i]);
     return prime_list;
 }
 
